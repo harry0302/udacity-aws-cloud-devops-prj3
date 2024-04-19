@@ -21,7 +21,7 @@ def health_check():
 @app.route("/readiness_check")
 def readiness_check():
     try:
-        count = db.session.query(Token).count()
+        count = db.session.query(text("SELECT COUNT(*) FROM tokens")).count()
     except Exception as e:
         app.logger.error(e)
         return "failed", 500
