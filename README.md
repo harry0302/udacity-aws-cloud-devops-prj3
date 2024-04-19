@@ -66,7 +66,7 @@ Update the value for below variables: DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD
 
 Run command to create secret: `kubectl apply -f configmap.yaml`
 
-3. Create secret
+4. Create secret
 Go to the folder deployment
 Update the password value to match with `db-password` inside file `secret.yaml`
 Run command to create secret: `kubectl apply -f secret.yaml`
