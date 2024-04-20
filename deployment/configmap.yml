@@ -3,7 +3,7 @@ kind: ConfigMap
 data:
   DB_USERNAME: "myuser"
   DB_NAME: "mydatabase"
-  DB_HOST: "10.100.178.171"
+  DB_HOST: "10.100.35.44"
   DB_PORT: "5432"
 metadata:
   name: db-env

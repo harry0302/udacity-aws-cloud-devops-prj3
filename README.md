@@ -38,54 +38,80 @@ Create an Amazon ECR repository in your AWS console.
 
 ### Deployment Steps
 1. Create EKS Cluster:
-`eksctl create cluster --name my-cluster --region us-east-1 --nodegroup-name my-nodes --node-type t3.small --nodes 1 --nodes-min 1 --nodes-max 2`
+```
+eksctl create cluster --name my-cluster --region us-east-1 --nodegroup-name my-nodes --node-type t3.small --nodes 1 --nodes-min 1 --nodes-max 2
+```
 
-Connect EKS with local kubectl `aws eks --region us-east-1 update-kubeconfig --name my-cluster`
+Connect EKS with local kubectl 
+```
+aws eks --region us-east-1 update-kubeconfig --name my-cluster
+```
 
 After done, delete cluster by below command
-`eksctl delete cluster --name my-cluster --region us-east-1`
+```
+eksctl delete cluster --name my-cluster --region us-east-1
+```
 
 2. Add cloudwatch to the EKS cluster:
 - Add new policy `CloudWatchAgentServerPolicy` to EKS Node group role:
-`aws iam attach-role-policy --role-name eksctl-my-cluster-nodegroup-my-nod-NodeInstanceRole-jXNNFVvKvpkJ --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy`
+```
+aws iam attach-role-policy --role-name eksctl-my-cluster-nodegroup-my-nod-NodeInstanceRole-jXNNFVvKvpkJ --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+```
 
 - Add addon cloudwatch to EKS:
-`aws eks create-addon --cluster-name my-cluster --addon-name amazon-cloudwatch-observability`
+```
+aws eks create-addon --cluster-name my-cluster --addon-name amazon-cloudwatch-observability
+```
 
 3. Deploy database:
 Navigate to the `db` folder inside the repository. 
 Review and update the database info inside file `postgresql-deployment.yaml` if needed: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
 Run the following commands to deploy the PostgreSQL database:
-`kubectl apply -f pvc.yaml`
-`kubectl apply -f pv.yaml`
-`kubectl apply -f postgresql-deployment.yaml`
-`kubectl apply -f postgresql-service.yaml`
+```
+kubectl apply -f pvc.yaml
+kubectl apply -f pv.yaml
+kubectl apply -f postgresql-deployment.yaml
+kubectl apply -f postgresql-service.yaml
+```
 
-
-Connect to the database and run the scripts `1_create_tables.sql`, `2_seed_users.sql`, and `3_seed_tokens.sql` to create test data.
+Connect to the database and run the scripts 
+`1_create_tables.sql`
+`2_seed_users.sql`
+`3_seed_tokens.sql` 
+to create test data.
 
 4. Create config map:
-Go to the folder deployment
-Update the value for below variables: DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME inside file `configmap.yaml`.
+Go to the folder `deployment`. Update the value for below variables: DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME inside file `configmap.yml`.
 
-Run command to create secret: `kubectl apply -f configmap.yaml`
+Run command to create secret: 
+```
+kubectl apply -f configmap.yml
+```
 
 5. Create secret:
-Navigate to the `deployment` folder. Update the password value to match with `db-password` inside `secret.yaml`. 
+Navigate to the `deployment` folder. Update the password value to match with `db-password` inside `secrets.yml`. 
 Run the command to create the secret:
-`kubectl apply -f secret.yaml`
+```
+kubectl apply -f secrets.yml
+```
 
 6. Deploy Coworking Application:
 Whenever there's a new version of the code, change the version in the `image` section. 
 Then, deploy the application with:
-`kubectl apply -f coworking.yaml`
+```
+kubectl apply -f coworking-deployment.yml
+```
 
 ### Verify
 Retrieve all services deployed to the cluster:
-`kubectl get svc`
+```
+kubectl get svc
+```
 
 Retrieve all pods:
-`kubectl get pods`
+```
+kubectl get pods
+```
 
 You can also check application logs from CloudWatch.
 
